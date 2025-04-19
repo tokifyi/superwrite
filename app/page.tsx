@@ -32,9 +32,11 @@ export default function Home() {
       return
     }
 
-    // Log environment variables (they will be public anyway since they're NEXT_PUBLIC_*)
-    console.log('Supabase URL:', process.env.NEXT_PUBLIC_SUPABASE_URL ? 'Set' : 'Not set')
-    console.log('Supabase Key:', process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ? 'Set' : 'Not set')
+    if (!supabase) {
+      console.error('Supabase client not initialized')
+      setSubmitError('Service temporarily unavailable')
+      return
+    }
 
     try {
       const { error } = await supabase
@@ -45,7 +47,7 @@ export default function Home() {
 
       if (error) {
         console.error('Supabase error:', error)
-        if (error.code === '23505') { // Unique violation
+        if (error.code === '23505') {
           setSubmitError("You're already subscribed!")
         } else {
           setSubmitError('Something went wrong. Please try again.')
