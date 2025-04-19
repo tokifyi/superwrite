@@ -1,0 +1,23 @@
+/* Add this to your global CSS to hide the Next.js button */
+/* This targets the default Next.js development mode indicator */
+[data-nextjs-root-dev-indicator],
+[data-nextjs-root-dev-indicator] button,
+[data-nextjs-root-dev-indicator] > div {
+  display: none !important;
+  opacity: 0 !important;
+  visibility: hidden !important;
+  pointer-events: none !important;
+  position: absolute !important;
+  width: 0 !important;
+  height: 0 !important;
+  overflow: hidden !important;
+}
+
+/* Additional selector to target the specific N button */
+.nextjs-root-dev-indicator,
+.nextjs-root-dev-indicator button,
+#__next-build-watcher {
+  display: none !important;
+  opacity: 0 !important;
+  visibility: hidden !important;
+} 
