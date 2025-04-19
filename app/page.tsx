@@ -11,11 +11,9 @@ export default function Home() {
   const [submitError, setSubmitError] = useState('')
 
   useEffect(() => {
-    // Check system preference on mount
     const darkModePreference = window.matchMedia('(prefers-color-scheme: dark)')
     setIsDark(darkModePreference.matches)
 
-    // Listen for changes
     const handler = (e: MediaQueryListEvent) => setIsDark(e.matches)
     darkModePreference.addEventListener('change', handler)
     return () => darkModePreference.removeEventListener('change', handler)
@@ -35,7 +33,8 @@ export default function Home() {
     }
 
     if (!supabase) {
-      setSubmitError('Unable to connect to the database')
+      console.error('Supabase client not initialized')
+      setSubmitError('Service temporarily unavailable')
       return
     }
 
@@ -47,6 +46,7 @@ export default function Home() {
         ])
 
       if (error) {
+        console.error('Supabase error:', error)
         if (error.code === '23505') { // Unique violation
           setSubmitError("You're already subscribed!")
         } else {
@@ -58,6 +58,7 @@ export default function Home() {
       setSubmitted(true)
       setEmail('')
     } catch (err) {
+      console.error('Submit error:', err)
       setSubmitError('Something went wrong. Please try again.')
     }
   }
@@ -130,7 +131,7 @@ export default function Home() {
         </div>
 
         <div className={`mt-16 text-sm ${isDark ? 'text-gray-400' : 'text-gray-500'} flex flex-col gap-4`}>
-          <form onSubmit={handleSubmit} className="flex items-center gap-2">
+          <form onSubmit={handleSubmit} className="flex items-center gap-2 relative">
             {!submitted ? (
               <>
                 <input
@@ -154,10 +155,12 @@ export default function Home() {
               <p>thanks! i'll keep you posted.</p>
             )}
             {submitError && (
-              <p className="text-red-500 text-sm">{submitError}</p>
+              <p className={`absolute -bottom-6 left-0 text-sm ${isDark ? 'text-red-400' : 'text-red-500'}`}>
+                {submitError}
+              </p>
             )}
             <span className="ml-4">
-              · <a href="https://x.com/tokifyi" className="hover:underline ml-2">by toki</a>
+              · <a href="https://x.com/tokifyi" target="_blank" rel="noopener noreferrer" className="hover:underline ml-2">by toki</a>
             </span>
           </form>
         </div>
