@@ -7,15 +7,7 @@ const inter = Inter({ subsets: ["latin"] });
 export const metadata: Metadata = {
   title: "Superwrite",
   description: "A minimal writing environment",
-  icons: {
-    icon: false,
-    shortcut: false,
-    apple: false,
-    other: {
-      rel: 'icon',
-      url: 'data:,'
-    }
-  }
+  icons: null
 };
 
 export default function RootLayout({
