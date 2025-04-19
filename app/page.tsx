@@ -2,13 +2,14 @@
 
 import Link from 'next/link'
 import { useState, useEffect } from 'react'
-import { supabase } from '../lib/supabase'
+import { getSupabaseClient } from '../lib/supabase'
 
 export default function Home() {
   const [email, setEmail] = useState('')
   const [submitted, setSubmitted] = useState(false)
   const [isDark, setIsDark] = useState(true)
   const [submitError, setSubmitError] = useState('')
+  const [isSupabaseReady, setIsSupabaseReady] = useState(false)
 
   useEffect(() => {
     const darkModePreference = window.matchMedia('(prefers-color-scheme: dark)')
@@ -17,6 +18,12 @@ export default function Home() {
     const handler = (e: MediaQueryListEvent) => setIsDark(e.matches)
     darkModePreference.addEventListener('change', handler)
     return () => darkModePreference.removeEventListener('change', handler)
+  }, [])
+
+  useEffect(() => {
+    // Check if Supabase is ready
+    const supabase = getSupabaseClient()
+    setIsSupabaseReady(!!supabase)
   }, [])
 
   const toggleDarkMode = () => {
@@ -32,6 +39,8 @@ export default function Home() {
       return
     }
 
+    const supabase = getSupabaseClient()
+    
     if (!supabase) {
       console.error('Supabase client not initialized')
       setSubmitError('Service temporarily unavailable')
@@ -142,11 +151,13 @@ export default function Home() {
                   className={`bg-transparent border-b ${
                     isDark ? 'border-gray-700 focus:border-gray-500' : 'border-gray-300 focus:border-gray-500'
                   } outline-none px-1 py-0.5`}
+                  disabled={!isSupabaseReady}
                 />
                 <button 
                   type="submit" 
-                  className="hover:underline px-2 py-1 ml-1 text-base"
+                  className={`hover:underline px-2 py-1 ml-1 text-base ${!isSupabaseReady ? 'opacity-50' : ''}`}
                   aria-label="Submit email"
+                  disabled={!isSupabaseReady}
                 >
                   →
                 </button>
