@@ -2,11 +2,13 @@
 
 import Link from 'next/link'
 import { useState, useEffect } from 'react'
+import { supabase } from '../lib/supabase'
 
 export default function Home() {
   const [email, setEmail] = useState('')
   const [submitted, setSubmitted] = useState(false)
-  const [isDark, setIsDark] = useState(false)
+  const [isDark, setIsDark] = useState(true)
+  const [submitError, setSubmitError] = useState('')
 
   useEffect(() => {
     // Check system preference on mount
@@ -25,38 +27,68 @@ export default function Home() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    // Here you'll need to add the logic to save the email
-    // For now, just showing success state
-    setSubmitted(true)
+    setSubmitError('')
+
+    if (!email) {
+      setSubmitError('Please enter an email')
+      return
+    }
+
+    try {
+      const { error } = await supabase
+        .from('email_subscribers')
+        .insert([
+          { email: email.toLowerCase(), subscribed_at: new Date().toISOString() }
+        ])
+
+      if (error) {
+        if (error.code === '23505') { // Unique violation
+          setSubmitError("You're already subscribed!")
+        } else {
+          setSubmitError('Something went wrong. Please try again.')
+        }
+        return
+      }
+
+      setSubmitted(true)
+      setEmail('')
+    } catch (err) {
+      setSubmitError('Something went wrong. Please try again.')
+    }
   }
 
   return (
     <main className={`min-h-screen flex items-center justify-center relative transition-colors duration-200 ${
-      isDark ? 'bg-[#1a1a1a] text-[#fafafa]' : 'bg-[#fafafa] text-[#1a1a1a]'
+      isDark ? 'bg-[#191919] text-[#ededed]' : 'bg-[#fafafa] text-[#1a1a1a]'
     } p-6`}>
-      <button
-        onClick={toggleDarkMode}
-        className="absolute top-4 right-4 p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
-        aria-label={isDark ? 'Switch to light mode' : 'Switch to dark mode'}
-      >
-        {isDark ? (
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <circle cx="12" cy="12" r="5"/>
-            <line x1="12" y1="1" x2="12" y2="3"/>
-            <line x1="12" y1="21" x2="12" y2="23"/>
-            <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/>
-            <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/>
-            <line x1="1" y1="12" x2="3" y2="12"/>
-            <line x1="21" y1="12" x2="23" y2="12"/>
-            <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/>
-            <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>
-          </svg>
-        ) : (
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
-          </svg>
-        )}
-      </button>
+      <div className="fixed top-4 right-4 z-50 flex items-center gap-4 transition-opacity duration-200 opacity-60 hover:opacity-100">
+        <button
+          onClick={toggleDarkMode}
+          className={`p-2 rounded-full transition-all duration-200 ${
+            isDark 
+              ? 'hover:bg-[#2a2a2a] text-[#999]' 
+              : 'hover:bg-gray-100 text-[#999]'
+          }`}
+        >
+          {isDark ? (
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <circle cx="12" cy="12" r="5"></circle>
+              <line x1="12" y1="1" x2="12" y2="3"></line>
+              <line x1="12" y1="21" x2="12" y2="23"></line>
+              <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+              <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+              <line x1="1" y1="12" x2="3" y2="12"></line>
+              <line x1="21" y1="12" x2="23" y2="12"></line>
+              <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+              <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+            </svg>
+          ) : (
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+            </svg>
+          )}
+        </button>
+      </div>
 
       <div className="max-w-xl space-y-6">
         <h1 className="text-4xl font-bold mb-8">superwrite</h1>
@@ -115,6 +147,9 @@ export default function Home() {
               </>
             ) : (
               <p>thanks! i'll keep you posted.</p>
+            )}
+            {submitError && (
+              <p className="text-red-500 text-sm">{submitError}</p>
             )}
             <span className="ml-4">
               · <a href="https://x.com/tokifyi" className="hover:underline ml-2">by toki</a>

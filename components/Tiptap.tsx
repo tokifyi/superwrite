@@ -34,7 +34,6 @@ export default function Tiptap({ isDarkMode, isFocusMode }: TiptapProps) {
     },
     content: '',
     onUpdate: ({ editor }) => {
-      // Get word count by splitting on whitespace and filtering out empty strings
       const text = editor.getText()
       const words = text.split(/\s+/).filter(word => word.length > 0)
       setWordCount(words.length)
@@ -42,14 +41,13 @@ export default function Tiptap({ isDarkMode, isFocusMode }: TiptapProps) {
   })
 
   useEffect(() => {
-    // Focus the editor when mounted
     if (editor) {
       editor.commands.focus('end')
     }
   }, [editor])
 
   return (
-    <div className="relative min-h-[calc(100vh-6rem)]">
+    <div className="relative">
       <style jsx global>{`
         .is-editor-empty:first-child::before {
           color: ${isDarkMode ? '#666' : '#aaa'};
@@ -58,6 +56,17 @@ export default function Tiptap({ isDarkMode, isFocusMode }: TiptapProps) {
           height: 0;
           pointer-events: none;
           position: absolute;
+        }
+        .ProseMirror {
+          min-height: 100px;
+          padding: 0.5rem 0;
+        }
+        .ProseMirror p.is-editor-empty:first-child::before {
+          color: ${isDarkMode ? '#666' : '#aaa'};
+          content: attr(data-placeholder);
+          float: left;
+          height: 0;
+          pointer-events: none;
         }
       `}</style>
       <EditorContent editor={editor} />
