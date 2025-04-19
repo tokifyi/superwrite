@@ -1,6 +1,7 @@
 import { useEffect } from 'react'
+import type { AppProps } from 'next/app'
 
-function MyApp({ Component, pageProps }) {
+function MyApp({ Component, pageProps }: AppProps) {
   useEffect(() => {
     // Remove Next.js development indicator (the N button)
     if (process.env.NODE_ENV === 'development') {
