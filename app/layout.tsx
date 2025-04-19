@@ -7,6 +7,15 @@ const inter = Inter({ subsets: ["latin"] });
 export const metadata: Metadata = {
   title: "Superwrite",
   description: "A minimal writing environment",
+  icons: {
+    icon: false,
+    shortcut: false,
+    apple: false,
+    other: {
+      rel: 'icon',
+      url: 'data:,'
+    }
+  }
 };
 
 export default function RootLayout({
@@ -16,9 +25,6 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <head>
-        <link rel="icon" href="/favicon.ico" />
-      </head>
       <body className={inter.className}>
         {children}
       </body>

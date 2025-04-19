@@ -32,11 +32,9 @@ export default function Home() {
       return
     }
 
-    if (!supabase) {
-      console.error('Supabase client not initialized')
-      setSubmitError('Service temporarily unavailable')
-      return
-    }
+    // Log environment variables (they will be public anyway since they're NEXT_PUBLIC_*)
+    console.log('Supabase URL:', process.env.NEXT_PUBLIC_SUPABASE_URL ? 'Set' : 'Not set')
+    console.log('Supabase Key:', process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ? 'Set' : 'Not set')
 
     try {
       const { error } = await supabase
