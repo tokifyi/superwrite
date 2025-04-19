@@ -52,8 +52,8 @@ export default function Editor() {
         </button>
       </div>
 
-      <div className="pt-20">
-        <main className={`max-w-3xl mx-auto px-6 transition-all duration-200 ${isFocusMode ? 'max-w-2xl' : ''}`}>
+      <div className="pt-12 sm:pt-20">
+        <main className={`max-w-3xl mx-auto px-4 sm:px-6 transition-all duration-200 ${isFocusMode ? 'max-w-2xl' : ''}`}>
           <Tiptap isDarkMode={isDarkMode} isFocusMode={isFocusMode} />
         </main>
       </div>

@@ -49,17 +49,9 @@ export default function Tiptap({ isDarkMode, isFocusMode }: TiptapProps) {
   return (
     <div className="relative">
       <style jsx global>{`
-        .is-editor-empty:first-child::before {
-          color: ${isDarkMode ? '#666' : '#aaa'};
-          content: attr(data-placeholder);
-          float: left;
-          height: 0;
-          pointer-events: none;
-          position: absolute;
-        }
         .ProseMirror {
-          min-height: 100px;
-          padding: 0.5rem 0;
+          min-height: 50vh;
+          padding-top: 0.5rem;
         }
         .ProseMirror p.is-editor-empty:first-child::before {
           color: ${isDarkMode ? '#666' : '#aaa'};
@@ -73,7 +65,7 @@ export default function Tiptap({ isDarkMode, isFocusMode }: TiptapProps) {
       
       {/* Word Count */}
       <div 
-        className={`fixed bottom-6 right-6 text-sm transition-all duration-200 ${
+        className={`fixed bottom-4 right-4 text-sm transition-all duration-200 ${
           isDarkMode ? 'text-gray-400' : 'text-gray-500'
         } ${
           isFocusMode ? 'opacity-0 hover:opacity-100' : 'opacity-100'
