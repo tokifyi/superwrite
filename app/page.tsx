@@ -34,6 +34,11 @@ export default function Home() {
       return
     }
 
+    if (!supabase) {
+      setSubmitError('Unable to connect to the database')
+      return
+    }
+
     try {
       const { error } = await supabase
         .from('email_subscribers')
