@@ -2,14 +2,9 @@
 
 import Link from 'next/link'
 import { useState, useEffect } from 'react'
-import { getSupabaseClient } from '../lib/supabase'
 
 export default function Home() {
-  const [email, setEmail] = useState('')
-  const [submitted, setSubmitted] = useState(false)
   const [isDark, setIsDark] = useState(true)
-  const [submitError, setSubmitError] = useState('')
-  const [isSupabaseReady, setIsSupabaseReady] = useState(false)
 
   useEffect(() => {
     const darkModePreference = window.matchMedia('(prefers-color-scheme: dark)')
@@ -20,56 +15,8 @@ export default function Home() {
     return () => darkModePreference.removeEventListener('change', handler)
   }, [])
 
-  useEffect(() => {
-    // Check if Supabase is ready
-    const supabase = getSupabaseClient()
-    setIsSupabaseReady(!!supabase)
-  }, [])
-
   const toggleDarkMode = () => {
     setIsDark(!isDark)
-  }
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setSubmitError('')
-
-    if (!email) {
-      setSubmitError('Please enter an email')
-      return
-    }
-
-    const supabase = getSupabaseClient()
-    
-    if (!supabase) {
-      console.error('Supabase client not initialized')
-      setSubmitError('Service temporarily unavailable')
-      return
-    }
-
-    try {
-      const { error } = await supabase
-        .from('email_subscribers')
-        .insert([
-          { email: email.toLowerCase(), subscribed_at: new Date().toISOString() }
-        ])
-
-      if (error) {
-        console.error('Supabase error:', error)
-        if (error.code === '23505') {
-          setSubmitError("You're already subscribed!")
-        } else {
-          setSubmitError('Something went wrong. Please try again.')
-        }
-        return
-      }
-
-      setSubmitted(true)
-      setEmail('')
-    } catch (err) {
-      console.error('Submit error:', err)
-      setSubmitError('Something went wrong. Please try again.')
-    }
   }
 
   return (
@@ -139,41 +86,10 @@ export default function Home() {
           </p>
         </div>
 
-        <div className={`mt-16 text-sm ${isDark ? 'text-gray-400' : 'text-gray-500'} flex flex-col gap-4`}>
-          <form onSubmit={handleSubmit} className="flex items-center gap-2 relative">
-            {!submitted ? (
-              <>
-                <input
-                  type="email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  placeholder="email for updates"
-                  className={`bg-transparent border-b ${
-                    isDark ? 'border-gray-700 focus:border-gray-500' : 'border-gray-300 focus:border-gray-500'
-                  } outline-none px-1 py-0.5`}
-                  disabled={!isSupabaseReady}
-                />
-                <button 
-                  type="submit" 
-                  className={`hover:underline px-2 py-1 ml-1 text-base ${!isSupabaseReady ? 'opacity-50' : ''}`}
-                  aria-label="Submit email"
-                  disabled={!isSupabaseReady}
-                >
-                  →
-                </button>
-              </>
-            ) : (
-              <p>thanks! i'll keep you posted.</p>
-            )}
-            {submitError && (
-              <p className={`absolute -bottom-6 left-0 text-sm ${isDark ? 'text-red-400' : 'text-red-500'}`}>
-                {submitError}
-              </p>
-            )}
-            <span className="ml-4">
-              · <a href="https://x.com/tokifyi" target="_blank" rel="noopener noreferrer" className="hover:underline ml-2">by toki</a>
-            </span>
-          </form>
+        <div className={`mt-16 text-sm ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>
+          <span>
+            · <a href="https://x.com/tokifyi" target="_blank" rel="noopener noreferrer" className="hover:underline ml-2">by toki</a>
+          </span>
         </div>
       </div>
     </main>
